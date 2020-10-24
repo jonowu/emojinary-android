@@ -45,6 +45,9 @@ class ProfileActivity : AppCompatActivity() {
 
         // get the username from the intent extras
         val username = intent.getStringExtra(EXTRA_USERNAME)
+        if (username != null) {
+            supportActionBar?.title = username
+        }
         //val username = "Jonathan"
         firestoreDb = FirebaseFirestore.getInstance() // points to the root of the db
         var moviesReference = firestoreDb
