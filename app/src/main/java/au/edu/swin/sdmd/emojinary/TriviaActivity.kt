@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import au.edu.swin.sdmd.emojinary.models.Movie
+import au.edu.swin.sdmd.emojinary.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,6 +19,8 @@ private const val TAG = "TriviaActivity"
 private const val EXTRA_USERNAME = "EXTRA_USERNAME"
 class TriviaActivity : AppCompatActivity() {
 
+    // get currently signed in user from Firebase
+    private var signedInUser: User? = null
     // this is a lateinit var because it is initalised in onCreate,
     // and once it is initialised it should never be null.
     private lateinit var firestoreDb: FirebaseFirestore
@@ -29,6 +32,19 @@ class TriviaActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trivia)
+
+        firestoreDb = FirebaseFirestore.getInstance() // points to the root of the db
+
+        // set signedInUser to the currently signed in user
+        firestoreDb.collection("users")
+            .document(FirebaseAuth.getInstance().currentUser?.uid as String)
+            .get()
+            .addOnSuccessListener { userSnapshot ->
+                signedInUser = userSnapshot.toObject(User::class.java)
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Failed to get the currently logged in user", exception)
+            }
         /*
         // Create the layout file for each trivia item - Finished!
         // Create data source
@@ -89,7 +105,7 @@ class TriviaActivity : AppCompatActivity() {
             val intent = Intent(this, ProfileActivity::class.java)
             // pass in an extra into the intent, which is the username
             // so that the user only sees trivia that they created
-            intent.putExtra(EXTRA_USERNAME, "Nicole")
+            intent.putExtra(EXTRA_USERNAME, signedInUser?.username)
             startActivity(intent)
         }
         return super.onOptionsItemSelected(item)
