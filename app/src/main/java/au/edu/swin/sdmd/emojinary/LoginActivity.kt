@@ -1,5 +1,6 @@
 package au.edu.swin.sdmd.emojinary
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,11 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        // Firebase authentication check
+        val auth = FirebaseAuth.getInstance()
+        if (auth.currentUser != null) {
+            goTriviaActivity()
+        }
         btnLogin.setOnClickListener {
             btnLogin.isEnabled = false
             val email = etEmail.text.toString()
@@ -22,8 +28,6 @@ class LoginActivity : AppCompatActivity() {
                 btnLogin.isEnabled = true
                 return@setOnClickListener
             }
-            // Firebase authentication check
-            val auth = FirebaseAuth.getInstance()
             // This is an async operation, so we need an addOnCompleteListener
             auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 btnLogin.isEnabled = true
@@ -42,10 +46,8 @@ class LoginActivity : AppCompatActivity() {
 
     private fun goTriviaActivity() {
         Log.i(TAG, "goTriviaActivity")
-        /*
         val intent = Intent(this, TriviaActivity::class.java)
         startActivity(intent)
-        finish()
-         */
+        finish() // this will end the login activity so users can't go back to the login screen
     }
 }
