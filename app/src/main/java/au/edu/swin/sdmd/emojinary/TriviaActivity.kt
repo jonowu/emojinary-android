@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import au.edu.swin.sdmd.emojinary.models.Movie
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -31,8 +32,10 @@ class TriviaActivity : AppCompatActivity() {
                 // return early when something goes wrong
                 return@addSnapshotListener
             }
-            for (document in snapshot.documents) {
-                Log.i(TAG, "Document ${document.id}: ${document.data}")
+            // map the the list of movies and translate it to a list of Movie class objects.
+            val movieList = snapshot.toObjects(Movie::class.java)
+            for (movie in movieList) {
+                Log.i(TAG, "Movie ${movie}")
             }
         }
     }
