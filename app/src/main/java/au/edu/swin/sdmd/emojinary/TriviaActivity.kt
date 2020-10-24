@@ -6,9 +6,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.LinearLayoutManager
 import au.edu.swin.sdmd.emojinary.models.Movie
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.activity_trivia.*
 
 private const val TAG = "TriviaActivity"
 class TriviaActivity : AppCompatActivity() {
@@ -19,6 +22,7 @@ class TriviaActivity : AppCompatActivity() {
     // create mutable list of movie trivia objects
     // needs to mutable so firebase can update it
     private lateinit var trivia: MutableList<Movie>
+    private lateinit var adapter: TriviaAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +32,13 @@ class TriviaActivity : AppCompatActivity() {
         // Create data source
         // during onCreate, initially set trivia as empty list
         trivia = mutableListOf()
+
         // Create the adapter
+        adapter = TriviaAdapter(this, trivia)
+
         // Bind the adapter and layout manager to the Recycler View
+        rvTrivia.adapter = adapter
+        rvTrivia.layoutManager = LinearLayoutManager(this)
 
         // Query Firestore to retrieve data
         firestoreDb = FirebaseFirestore.getInstance() // points to the root of the db
@@ -44,6 +53,12 @@ class TriviaActivity : AppCompatActivity() {
             }
             // map the the list of movies and translate it to a list of Movie class objects.
             val movieList = snapshot.toObjects(Movie::class.java)
+            // clear old data
+            trivia.clear()
+            // add data from Firebase to trivia list
+            trivia.addAll(movieList)
+            // update the adapter
+            adapter.notifyDataSetChanged()
             for (movie in movieList) {
                 Log.i(TAG, "Movie ${movie}")
             }
