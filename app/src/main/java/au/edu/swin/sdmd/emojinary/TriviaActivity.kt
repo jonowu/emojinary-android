@@ -3,13 +3,38 @@ package au.edu.swin.sdmd.emojinary
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
+private const val TAG = "TriviaActivity"
 class TriviaActivity : AppCompatActivity() {
+
+    // this is a lateinit var because it is initalised in onCreate,
+    // and once it is initialised it should never be null.
+    private lateinit var firestoreDb: FirebaseFirestore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trivia)
+
+        // Query Firestore to retrieve data
+        firestoreDb = FirebaseFirestore.getInstance() // points to the root of the db
+        val moviesReference = firestoreDb.collection("movies") // go to movies collection
+        // snapshot listener asks Firebase to inform you of any changes to the collection,
+        // it has 2 parameters for the async callback, snapshot and exception
+        moviesReference.addSnapshotListener { snapshot, exception ->
+            if (exception != null || snapshot == null) {
+                Log.e(TAG, "An exception occured when querying movies", exception)
+                // return early when something goes wrong
+                return@addSnapshotListener
+            }
+            for (document in snapshot.documents) {
+                Log.i(TAG, "Document ${document.id}: ${document.data}")
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
