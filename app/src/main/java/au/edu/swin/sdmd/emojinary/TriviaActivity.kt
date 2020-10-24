@@ -16,7 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_trivia.*
 
 private const val TAG = "TriviaActivity"
-private const val EXTRA_USERNAME = "EXTRA_USERNAME"
+const val EXTRA_USERNAME = "EXTRA_USERNAME"
 class TriviaActivity : AppCompatActivity() {
 
     // get currently signed in user from Firebase

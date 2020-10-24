@@ -13,8 +13,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_profile.*
 
 private const val TAG = "ProfileActivity"
-private const val EXTRA_USERNAME = "EXTRA_USERNAME"
-
 class ProfileActivity : AppCompatActivity() {
 
     // this is a lateinit var because it is initalised in onCreate,

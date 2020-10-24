@@ -1,5 +1,6 @@
 package au.edu.swin.sdmd.emojinary
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -56,5 +57,12 @@ class CreateActivity : AppCompatActivity() {
             Toast.makeText(this, "User is not signed in, please wait", Toast.LENGTH_SHORT).show()
             return
         }
+
+        btnSubmit.isEnabled = false
+        val profileIntent = Intent(this, ProfileActivity::class.java)
+        profileIntent.putExtra(EXTRA_USERNAME, signedInUser?.username)
+        startActivity(profileIntent)
+        finish()
+        // Create movie object with the provided details
     }
 }
