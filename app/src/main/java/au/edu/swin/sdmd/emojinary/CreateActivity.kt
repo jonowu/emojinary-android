@@ -70,7 +70,7 @@ class CreateActivity : AppCompatActivity() {
             answers,
             signedInUser!!.username
         )
-        //Log.i(TAG, trivia.toString())
+
         // add it to Firebase
         firestoreDb.collection("movies")
             .add(trivia)
