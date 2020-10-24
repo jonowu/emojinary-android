@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import au.edu.swin.sdmd.emojinary.models.Movie
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.activity_trivia.*
+import kotlinx.android.synthetic.main.activity_profile.*
 
 private const val TAG = "ProfileActivity"
 private const val EXTRA_USERNAME = "EXTRA_USERNAME"
@@ -74,6 +74,11 @@ class ProfileActivity : AppCompatActivity() {
             for (movie in movieList) {
                 Log.i(TAG, "Movie ${movie}")
             }
+        }
+
+        fabCreate.setOnClickListener {
+            val intent = Intent(this, CreateActivity::class.java)
+            startActivity(intent)
         }
     }
 
