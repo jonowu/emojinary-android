@@ -16,6 +16,9 @@ class TriviaActivity : AppCompatActivity() {
     // this is a lateinit var because it is initalised in onCreate,
     // and once it is initialised it should never be null.
     private lateinit var firestoreDb: FirebaseFirestore
+    // create mutable list of movie trivia objects
+    // needs to mutable so firebase can update it
+    private lateinit var trivia: MutableList<Movie>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +26,8 @@ class TriviaActivity : AppCompatActivity() {
 
         // Create the layout file for each trivia item - Finished!
         // Create data source
+        // during onCreate, initially set trivia as empty list
+        trivia = mutableListOf()
         // Create the adapter
         // Bind the adapter and layout manager to the Recycler View
 
