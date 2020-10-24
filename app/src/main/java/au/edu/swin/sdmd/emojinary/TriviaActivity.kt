@@ -21,7 +21,7 @@ class TriviaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trivia)
 
-        // Create the layout file for each trivia item
+        // Create the layout file for each trivia item - Finished!
         // Create data source
         // Create the adapter
         // Bind the adapter and layout manager to the Recycler View
