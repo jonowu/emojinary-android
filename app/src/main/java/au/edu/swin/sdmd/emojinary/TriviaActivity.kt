@@ -29,7 +29,7 @@ class TriviaActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trivia)
-
+        /*
         // Create the layout file for each trivia item - Finished!
         // Create data source
         // during onCreate, initially set trivia as empty list
@@ -73,6 +73,7 @@ class TriviaActivity : AppCompatActivity() {
                 Log.i(TAG, "Movie ${movie}")
             }
         }
+        */
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -88,7 +89,7 @@ class TriviaActivity : AppCompatActivity() {
             val intent = Intent(this, ProfileActivity::class.java)
             // pass in an extra into the intent, which is the username
             // so that the user only sees trivia that they created
-            intent.putExtra(EXTRA_USERNAME, "Jonathan")
+            intent.putExtra(EXTRA_USERNAME, "Nicole")
             startActivity(intent)
         }
         return super.onOptionsItemSelected(item)
