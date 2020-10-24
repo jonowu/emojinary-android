@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import au.edu.swin.sdmd.emojinary.models.Movie
 import au.edu.swin.sdmd.emojinary.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -59,10 +60,30 @@ class CreateActivity : AppCompatActivity() {
         }
 
         btnSubmit.isEnabled = false
-        val profileIntent = Intent(this, ProfileActivity::class.java)
-        profileIntent.putExtra(EXTRA_USERNAME, signedInUser?.username)
-        startActivity(profileIntent)
-        finish()
+
+        val answers = mutableListOf<String>()
+        answers.add(etAnswer.text.toString())
         // Create movie object with the provided details
+        val trivia =  Movie(
+            etEmoji.text.toString(),
+            rbDifficulty.rating.toInt(),
+            answers,
+            signedInUser!!.username
+        )
+        //Log.i(TAG, trivia.toString())
+        // add it to Firebase
+        firestoreDb.collection("movies")
+            .add(trivia)
+            .addOnSuccessListener {
+                // navigate back to profile screen
+                val profileIntent = Intent(this, ProfileActivity::class.java)
+                profileIntent.putExtra(EXTRA_USERNAME, signedInUser?.username)
+                startActivity(profileIntent)
+                finish()
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error adding trivia", exception)
+            }
+
     }
 }
