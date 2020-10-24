@@ -10,10 +10,12 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import au.edu.swin.sdmd.emojinary.models.Movie
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_trivia.*
 
 private const val TAG = "TriviaActivity"
+private const val EXTRA_USERNAME = "EXTRA_USERNAME"
 class TriviaActivity : AppCompatActivity() {
 
     // this is a lateinit var because it is initalised in onCreate,
@@ -41,8 +43,16 @@ class TriviaActivity : AppCompatActivity() {
         rvTrivia.layoutManager = LinearLayoutManager(this)
 
         // Query Firestore to retrieve data
+
+        // get the username from the intent extras
+       // val username = intent.getStringExtra(EXTRA_USERNAME)
+        val username = "Jonathan"
         firestoreDb = FirebaseFirestore.getInstance() // points to the root of the db
-        val moviesReference = firestoreDb.collection("movies") // go to movies collection
+        var moviesReference = firestoreDb
+            .collection("movies") // go to movies collection
+            .whereEqualTo("username", username) // only include the trivia where the username field matches the current user
+
+
         // snapshot listener asks Firebase to inform you of any changes to the collection,
         // it has 2 parameters for the async callback, snapshot and exception
         moviesReference.addSnapshotListener { snapshot, exception ->
@@ -76,6 +86,9 @@ class TriviaActivity : AppCompatActivity() {
         if (item.itemId == R.id.menu_profle) {
             // navigate to the ProfileActivity using an intent
             val intent = Intent(this, ProfileActivity::class.java)
+            // pass in an extra into the intent, which is the username
+            // so that the user only sees trivia that they created
+            intent.putExtra(EXTRA_USERNAME, "Jonathan")
             startActivity(intent)
         }
         return super.onOptionsItemSelected(item)
