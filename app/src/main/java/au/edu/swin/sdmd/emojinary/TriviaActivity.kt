@@ -21,6 +21,11 @@ class TriviaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trivia)
 
+        // Create the layout file for each trivia item
+        // Create data source
+        // Create the adapter
+        // Bind the adapter and layout manager to the Recycler View
+
         // Query Firestore to retrieve data
         firestoreDb = FirebaseFirestore.getInstance() // points to the root of the db
         val moviesReference = firestoreDb.collection("movies") // go to movies collection
