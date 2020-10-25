@@ -1,10 +1,10 @@
 package au.edu.swin.sdmd.emojinary
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import au.edu.swin.sdmd.emojinary.models.Movie
 import au.edu.swin.sdmd.emojinary.models.User
 import com.google.firebase.auth.FirebaseAuth
@@ -21,8 +21,20 @@ class CreateActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create)
 
-        firestoreDb = FirebaseFirestore.getInstance() // points to the root of the db
+        // Get the extras (if there are any)
+        val extras = intent.extras
+        if (extras != null) {
+            if (extras.containsKey(EXTRA_TRIVIA)) {
+                val movie = intent.getParcelableExtra<Movie>(EXTRA_TRIVIA)!!
+                if (movie != null) {
+                    etEmoji.setText(movie.emoji)
+                    rbDifficulty.rating = movie.difficulty.toFloat()
+                    etAnswer.setText(movie.answers[0])
+                }
+            }
+        }
 
+        firestoreDb = FirebaseFirestore.getInstance() // points to the root of the db
         // set signedInUser to the currently signed in user
         firestoreDb.collection("users")
             .document(FirebaseAuth.getInstance().currentUser?.uid as String)
