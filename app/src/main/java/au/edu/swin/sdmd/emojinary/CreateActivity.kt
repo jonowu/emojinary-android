@@ -16,6 +16,7 @@ private const val TAG = "CreateActivity"
 
 class CreateActivity : AppCompatActivity() {
     private lateinit var firestoreDb: FirebaseFirestore
+    private lateinit var movie: Movie
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,12 +26,11 @@ class CreateActivity : AppCompatActivity() {
         val extras = intent.extras
         if (extras != null) {
             if (extras.containsKey(EXTRA_TRIVIA)) {
-                val movie = intent.getParcelableExtra<Movie>(EXTRA_TRIVIA)!!
-                if (movie != null) {
-                    etEmoji.setText(movie.emoji)
-                    rbDifficulty.rating = movie.difficulty.toFloat()
-                    etAnswer.setText(movie.answers[0])
-                }
+                movie = intent.getParcelableExtra<Movie>(EXTRA_TRIVIA)!!
+                etEmoji.setText(movie.emoji)
+                rbDifficulty.rating = movie.difficulty.toFloat()
+                etAnswer.setText(movie.answers[0])
+                btnSubmit.text = "Update"
             }
         }
 
