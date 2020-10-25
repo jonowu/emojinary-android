@@ -16,7 +16,6 @@ private const val TAG = "CreateActivity"
 
 class CreateActivity : AppCompatActivity() {
     private lateinit var firestoreDb: FirebaseFirestore
-    private lateinit var movie: Movie
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +25,7 @@ class CreateActivity : AppCompatActivity() {
         val extras = intent.extras
         if (extras != null) {
             if (extras.containsKey(EXTRA_TRIVIA)) {
-                movie = intent.getParcelableExtra<Movie>(EXTRA_TRIVIA)!!
+                val movie = intent.getParcelableExtra<Movie>(EXTRA_TRIVIA)!!
                 etEmoji.setText(movie.emoji)
                 rbDifficulty.rating = movie.difficulty.toFloat()
                 etAnswer.setText(movie.answers[0])
@@ -82,20 +81,25 @@ class CreateActivity : AppCompatActivity() {
             answers,
             signedInUser!!.username
         )
+        if (btnSubmit.text == "Update") {
+            // update the entry
+            Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show()
 
-        // add it to Firebase
-        firestoreDb.collection("movies")
-            .add(trivia)
-            .addOnSuccessListener {
-                // navigate back to profile screen
-                val profileIntent = Intent(this, ProfileActivity::class.java)
-                profileIntent.putExtra(EXTRA_USERNAME, signedInUser?.username)
-                startActivity(profileIntent)
-                finish()
-            }
-            .addOnFailureListener { exception ->
-                Log.e(TAG, "Error adding trivia", exception)
-            }
+        } else {
+            // add it to Firebase
+            firestoreDb.collection("movies")
+                .add(trivia)
+                .addOnSuccessListener {
+                    // navigate back to profile screen
+                    val profileIntent = Intent(this, ProfileActivity::class.java)
+                    profileIntent.putExtra(EXTRA_USERNAME, signedInUser?.username)
+                    startActivity(profileIntent)
+                    finish()
+                }
+                .addOnFailureListener { exception ->
+                    Log.e(TAG, "Error adding trivia", exception)
+                }
+        }
 
     }
 }
