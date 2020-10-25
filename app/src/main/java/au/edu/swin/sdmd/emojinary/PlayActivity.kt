@@ -10,10 +10,11 @@ import au.edu.swin.sdmd.emojinary.models.Movie
 import au.edu.swin.sdmd.emojinary.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.item_trivia.*
 
-private const val TAG = "TriviaActivity"
+private const val TAG = "PlayActivity"
 const val EXTRA_USERNAME = "EXTRA_USERNAME"
-class TriviaActivity : AppCompatActivity() {
+class PlayActivity : AppCompatActivity() {
 
     // get currently signed in user from Firebase
     private var signedInUser: User? = null
@@ -23,11 +24,13 @@ class TriviaActivity : AppCompatActivity() {
     // create mutable list of movie trivia objects
     // needs to mutable so firebase can update it
     private lateinit var trivia: MutableList<Movie>
-    private lateinit var adapter: TriviaAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_trivia)
+        setContentView(R.layout.activity_play)
+
+        // during onCreate, initially set trivia as empty list
+        trivia = mutableListOf()
 
         firestoreDb = FirebaseFirestore.getInstance() // points to the root of the db
 
@@ -41,6 +44,28 @@ class TriviaActivity : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 Log.e(TAG, "Failed to get the currently logged in user", exception)
             }
+
+        // get the movies
+        var moviesReference = firestoreDb
+            .collection("movies") // go to movies collection
+                // snapshot listener asks Firebase to inform you of any changes to the collection,
+        // it has 2 parameters for the async callback, snapshot and exception
+        moviesReference.addSnapshotListener { snapshot, exception ->
+            if (exception != null || snapshot == null) {
+                Log.e(TAG, "An exception occured when querying movies", exception)
+                // return early when something goes wrong
+                return@addSnapshotListener
+            }
+            // map the the list of movies and translate it to a list of Movie class objects.
+            val movieList = snapshot.toObjects(Movie::class.java)
+            // clear old data
+            trivia.clear()
+            // add data from Firebase to trivia list
+            trivia.addAll(movieList)
+            Log.i(TAG, trivia.toString())
+            tvEmoji.text = trivia.random().emoji
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

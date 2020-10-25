@@ -16,7 +16,7 @@ class LoginActivity : AppCompatActivity() {
         // Firebase authentication check
         val auth = FirebaseAuth.getInstance()
         if (auth.currentUser != null) {
-            goTriviaActivity()
+            goPlayActivity()
         }
         btnLogin.setOnClickListener {
             btnLogin.isEnabled = false
@@ -33,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
                 btnLogin.isEnabled = true
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Success!", Toast.LENGTH_SHORT).show()
-                    goTriviaActivity()
+                    goPlayActivity()
                 } else {
                     // if login fails, log and toast that it failed with the exception
                     Log.e(TAG, "signInWithEmail failed", task.exception)
@@ -44,9 +44,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun goTriviaActivity() {
-        Log.i(TAG, "goTriviaActivity")
-        val intent = Intent(this, TriviaActivity::class.java)
+    private fun goPlayActivity() {
+        Log.i(TAG, "goPlayActivity")
+        val intent = Intent(this, PlayActivity::class.java)
         startActivity(intent)
         finish() // this will end the login activity so users can't go back to the login screen
     }

@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".CreateActivity"></activity>
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".TriviaActivity" />
+        <activity android:name=".PlayActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -9,6 +9,7 @@ import au.edu.swin.sdmd.emojinary.models.Movie
 import au.edu.swin.sdmd.emojinary.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_create.*
 
 private var signedInUser: User? = null
@@ -75,21 +76,29 @@ class CreateActivity : AppCompatActivity() {
         val answers = mutableListOf<String>()
         answers.add(etAnswer.text.toString())
         // Create movie object with the provided details
-        val trivia =  Movie(
+        val newTrivia =  Movie(
             "",
             etEmoji.text.toString(),
             rbDifficulty.rating.toInt(),
             answers,
             signedInUser!!.username
         )
-        if (btnSubmit.text == "Update") {
-            // update the entry
-            Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show()
 
-        } else {
-            // add it to Firebase
+        val extras = intent.extras
+        if (extras!!.containsKey(EXTRA_TRIVIA)) { // If trivia is being updated
+            val movie = intent.getParcelableExtra<Movie>(EXTRA_TRIVIA)!!
+            Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show()
+            firestoreDb.collection("movies").document(movie.documentId)
+                .set(newTrivia, SetOptions.merge())
+                .addOnSuccessListener { val profileIntent = Intent(this, ProfileActivity::class.java)
+                    profileIntent.putExtra(EXTRA_USERNAME, signedInUser?.username)
+                    startActivity(profileIntent)
+                    finish()
+                }
+                .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+        } else { // add the newTrivia to Firebase
             firestoreDb.collection("movies")
-                .add(trivia)
+                .add(newTrivia)
                 .addOnSuccessListener {
                     // navigate back to profile screen
                     val profileIntent = Intent(this, ProfileActivity::class.java)
@@ -97,9 +106,7 @@ class CreateActivity : AppCompatActivity() {
                     startActivity(profileIntent)
                     finish()
                 }
-                .addOnFailureListener { exception ->
-                    Log.e(TAG, "Error adding trivia", exception)
-                }
+                .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
         }
 
     }
