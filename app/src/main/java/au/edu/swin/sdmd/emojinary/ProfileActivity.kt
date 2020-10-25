@@ -83,7 +83,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun showToast(item: Movie) {
-        Toast.makeText(applicationContext, item.emoji ,Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, item.documentId,Toast.LENGTH_SHORT).show()
         val intent = Intent(this, CreateActivity::class.java)
         // pass in an extra into the intent, which is the username
         // so that the user only sees trivia that they created

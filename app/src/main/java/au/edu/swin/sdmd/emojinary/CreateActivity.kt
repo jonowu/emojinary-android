@@ -76,6 +76,7 @@ class CreateActivity : AppCompatActivity() {
         answers.add(etAnswer.text.toString())
         // Create movie object with the provided details
         val trivia =  Movie(
+            "",
             etEmoji.text.toString(),
             rbDifficulty.rating.toInt(),
             answers,

@@ -6,7 +6,7 @@ import com.google.firebase.firestore.DocumentId
 
 @Parcelize
 data class Movie(
-    @DocumentId var documentId: String,
+    @DocumentId var documentId: String = "",
     var emoji: String = "", var difficulty: Int = 0,
     var answers: List<String> = listOf(), var username: String = ""
 ): Parcelable {
