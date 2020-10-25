@@ -9,12 +9,22 @@
     tools:context=".PlayActivity">
 
     <TextView
+        android:id="@+id/tvScore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:layout_marginRight="10dp"
+        android:text="Score:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+         />
+    <TextView
         android:id="@+id/tvEmoji"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="TextView"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="36sp" />
 
     <EditText
         android:id="@+id/etAnswer"
@@ -33,4 +43,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Skip" />
+
+    <Button
+        android:id="@+id/btnReset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="Reset" />
 </LinearLayout>

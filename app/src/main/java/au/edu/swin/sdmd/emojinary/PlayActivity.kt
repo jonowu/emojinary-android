@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import au.edu.swin.sdmd.emojinary.models.Movie
 import au.edu.swin.sdmd.emojinary.models.User
@@ -27,11 +28,16 @@ class PlayActivity : AppCompatActivity() {
     // create mutable list of movie trivia objects
     // needs to mutable so firebase can update it
     private lateinit var trivia: MutableList<Movie>
+    private lateinit var originalTrivia: MutableList<Movie>
+
     private var currentMovie: Movie? = null
+    private var score: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play)
+
+        tvScore.text = "Score: ${score.toString()}"
 
         // during onCreate, initially set trivia as empty list
         trivia = mutableListOf()
@@ -66,12 +72,17 @@ class PlayActivity : AppCompatActivity() {
             trivia.clear()
             // add data from Firebase to trivia list
             trivia.addAll(movieList)
+            originalTrivia = trivia.toMutableList()
             Log.i(TAG, trivia.toString())
             nextMovie()
         }
 
         btnSkip.setOnClickListener {
             nextMovie()
+        }
+
+        btnReset.setOnClickListener {
+            resetMovies()
         }
         
         btnCheckAnswer.setOnClickListener {
@@ -83,6 +94,8 @@ class PlayActivity : AppCompatActivity() {
                     if (it.equals(etAnswer.text.toString(), ignoreCase = true)) {
                         correct = true
                         trivia.remove(currentMovie!!)
+                        score++
+                        tvScore.text = "Score: ${score.toString()}"
                         nextMovie()
                         etAnswer.setText("")
                     }
@@ -98,9 +111,31 @@ class PlayActivity : AppCompatActivity() {
 
     }
 
+    fun resetMovies() {
+        etAnswer.visibility = View.VISIBLE
+        btnCheckAnswer.visibility = View.VISIBLE
+        btnSkip.visibility = View.VISIBLE
+        btnReset.visibility = View.GONE
+
+
+        score = 0 // reset the score
+        tvScore.text = "Score: ${score.toString()}"
+        trivia = originalTrivia.toMutableList() // reset the items
+        nextMovie()
+    }
+
     fun nextMovie() {
-        currentMovie = trivia.random() // randomise the movie
-        tvEmoji.text = currentMovie!!.emoji // update the ui with the current emoji
+        if (trivia.size > 0) { // if there is more trivia
+            etAnswer.setText("") // clear any input
+            currentMovie = trivia.random() // randomise the movie
+            tvEmoji.text = currentMovie!!.emoji // update the ui with the current emoji
+        } else {
+            tvEmoji.text = "You guessed all the emojis - Congratulations!"
+            etAnswer.visibility = View.GONE
+            btnCheckAnswer.visibility = View.GONE
+            btnSkip.visibility = View.GONE
+            btnReset.visibility = View.VISIBLE
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
