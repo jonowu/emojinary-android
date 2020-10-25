@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import au.edu.swin.sdmd.emojinary.models.Movie
 import com.google.firebase.auth.FirebaseAuth
@@ -33,7 +34,7 @@ class ProfileActivity : AppCompatActivity() {
         trivia = mutableListOf()
 
         // Create the adapter
-        adapter = TriviaAdapter(this, trivia)
+        adapter = TriviaAdapter(this, trivia) { showToast(it)}
 
         // Bind the adapter and layout manager to the Recycler View
         rvTrivia.adapter = adapter
@@ -78,6 +79,10 @@ class ProfileActivity : AppCompatActivity() {
             val intent = Intent(this, CreateActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun showToast(item: Movie) {
+        Toast.makeText(applicationContext, item.emoji ,Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
