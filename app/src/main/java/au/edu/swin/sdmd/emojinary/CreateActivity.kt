@@ -2,6 +2,9 @@ package au.edu.swin.sdmd.emojinary
 
 import android.content.Intent
 import android.os.Bundle
+import android.renderscript.ScriptGroup
+import android.text.InputFilter
+import android.text.Spanned
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,13 +17,24 @@ import kotlinx.android.synthetic.main.activity_create.*
 
 private var signedInUser: User? = null
 private const val TAG = "CreateActivity"
-
+// these are character types that emoji unicodes can be made out of
+private val VALID_CHAR_TYPES = listOf(
+    Character.SURROGATE,
+    Character.NON_SPACING_MARK,
+    Character.OTHER_SYMBOL
+).map { it.toInt() }.toSet()
 class CreateActivity : AppCompatActivity() {
     private lateinit var firestoreDb: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create)
+
+        // restrict input length to 100 chars and only to emojis
+        // each emoji is a unicode, which consists of multiple characters, up to 4
+        val emojiFilter = EmojiFilter()
+        val lengthFilter = InputFilter.LengthFilter(100)
+        etEmoji.filters = arrayOf(lengthFilter, emojiFilter)
 
         // Get the extras (if there are any)
         val extras = intent.extras
@@ -50,6 +64,28 @@ class CreateActivity : AppCompatActivity() {
             handleSubmitButtonClick()
         }
 
+    }
+
+
+    inner class EmojiFilter : InputFilter {
+        override fun filter(source: CharSequence?, start: Int, end: Int, dest: Spanned?, dstart: Int, dend: Int): CharSequence {
+            if (source == null || source.isBlank()) {
+                return ""
+            }
+            Log.i(TAG, "Text added $source, it has a length of ${source.length} characters")
+            val validCharTypes = listOf(Character.SURROGATE, Character.NON_SPACING_MARK, Character.OTHER_SYMBOL).map { it.toInt() }
+            // check that every character input matches the valid char types
+            for (inputChar in source) {
+                val type = Character.getType(inputChar)
+                Log.i(TAG, "Character type $type")
+                if (!VALID_CHAR_TYPES.contains(type)) {
+                    Toast.makeText(this@CreateActivity, "Only emojis are allowed", Toast.LENGTH_SHORT).show()
+                    return ""
+                }
+            }
+            // The CharSequence being added is a valid emoji, so allow it to be added
+            return source
+        }
     }
 
     private fun handleSubmitButtonClick() {
