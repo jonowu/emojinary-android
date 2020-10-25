@@ -67,10 +67,13 @@ class PlayActivity : AppCompatActivity() {
             // add data from Firebase to trivia list
             trivia.addAll(movieList)
             Log.i(TAG, trivia.toString())
-            currentMovie = trivia.random() // randomise the movie
-            tvEmoji.text = currentMovie!!.emoji // update the ui with the current emoji
+            nextMovie()
         }
 
+        btnSkip.setOnClickListener {
+            nextMovie()
+        }
+        
         btnCheckAnswer.setOnClickListener {
             var correct = false
             if (currentMovie != null) {
@@ -80,8 +83,7 @@ class PlayActivity : AppCompatActivity() {
                     if (it.equals(etAnswer.text.toString(), ignoreCase = true)) {
                         correct = true
                         trivia.remove(currentMovie!!)
-                        currentMovie = trivia.random()
-                        tvEmoji.text = currentMovie!!.emoji // update the ui with the current emoji
+                        nextMovie()
                         etAnswer.setText("")
                     }
 
@@ -97,7 +99,8 @@ class PlayActivity : AppCompatActivity() {
     }
 
     fun nextMovie() {
-
+        currentMovie = trivia.random() // randomise the movie
+        tvEmoji.text = currentMovie!!.emoji // update the ui with the current emoji
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
