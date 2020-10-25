@@ -6,11 +6,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import au.edu.swin.sdmd.emojinary.models.Movie
 import au.edu.swin.sdmd.emojinary.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.activity_play.*
 import kotlinx.android.synthetic.main.item_trivia.*
+import kotlinx.android.synthetic.main.item_trivia.tvEmoji
 
 private const val TAG = "PlayActivity"
 const val EXTRA_USERNAME = "EXTRA_USERNAME"
@@ -24,6 +27,7 @@ class PlayActivity : AppCompatActivity() {
     // create mutable list of movie trivia objects
     // needs to mutable so firebase can update it
     private lateinit var trivia: MutableList<Movie>
+    private var currentMovie: Movie? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,8 +67,36 @@ class PlayActivity : AppCompatActivity() {
             // add data from Firebase to trivia list
             trivia.addAll(movieList)
             Log.i(TAG, trivia.toString())
-            tvEmoji.text = trivia.random().emoji
+            currentMovie = trivia.random() // randomise the movie
+            tvEmoji.text = currentMovie!!.emoji // update the ui with the current emoji
         }
+
+        btnCheckAnswer.setOnClickListener {
+            var correct = false
+            if (currentMovie != null) {
+                currentMovie!!.answers.forEach {// loop through the possible answers
+                    Log.i(TAG, it)
+
+                    if (it.equals(etAnswer.text.toString(), ignoreCase = true)) {
+                        correct = true
+                        trivia.remove(currentMovie!!)
+                        currentMovie = trivia.random()
+                        tvEmoji.text = currentMovie!!.emoji // update the ui with the current emoji
+                        etAnswer.setText("")
+                    }
+
+                    if (correct) {
+                        Toast.makeText(applicationContext, "Correct!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(applicationContext, "Incorrect :/", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
+    }
+
+    fun nextMovie() {
 
     }
 
