@@ -6,6 +6,7 @@ import android.renderscript.ScriptGroup
 import android.text.InputFilter
 import android.text.Spanned
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import au.edu.swin.sdmd.emojinary.models.Movie
@@ -45,6 +46,7 @@ class CreateActivity : AppCompatActivity() {
                 rbDifficulty.rating = movie.difficulty.toFloat()
                 etAnswer.setText(movie.answers[0])
                 btnSubmit.text = "Update"
+                btnDelete.visibility = View.VISIBLE // make the delete button visible
             }
         }
 
@@ -63,6 +65,10 @@ class CreateActivity : AppCompatActivity() {
         btnSubmit.setOnClickListener {
             handleSubmitButtonClick()
         }
+        btnDelete.setOnClickListener() {
+            handleDeleteButtonClick()
+        }
+
 
     }
 
@@ -86,6 +92,11 @@ class CreateActivity : AppCompatActivity() {
             // The CharSequence being added is a valid emoji, so allow it to be added
             return source
         }
+    }
+
+    private fun handleDeleteButtonClick() {
+        Toast.makeText(this, "Delete  selected", Toast.LENGTH_SHORT).show()
+        return
     }
 
     private fun handleSubmitButtonClick() {

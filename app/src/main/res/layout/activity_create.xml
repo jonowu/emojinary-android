@@ -59,4 +59,12 @@
         android:layout_marginTop="8dp"
         android:text="Submit" />
 
+    <Button
+        android:id="@+id/btnDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Delete"
+        android:visibility="gone"/>
+
 </LinearLayout>
