@@ -15,6 +15,8 @@ import au.edu.swin.sdmd.emojinary.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import android.renderscript.ScriptGroup
+
 import kotlinx.android.synthetic.main.activity_create.*
 
 
@@ -115,29 +117,43 @@ class CreateActivity : AppCompatActivity() {
         AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert)
             .setTitle("Delete Trivia").setMessage("Are you sure you want to delete this trivia?")
             .setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
-                finish()
-                Toast.makeText(this, "Activity closed", Toast.LENGTH_SHORT).show()
+                val extras = intent.extras
+                if (extras != null && extras.containsKey(EXTRA_TRIVIA)) { // If trivia is being updated
+                    val movie = intent.getParcelableExtra<Movie>(EXTRA_TRIVIA)!!
+                    Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show()
+                    firestoreDb.collection("movies").document(movie.documentId)
+                        .delete()
+                        .addOnSuccessListener {
+                            val profileIntent = Intent(this, ProfileActivity::class.java)
+                            profileIntent.putExtra(EXTRA_USERNAME, signedInUser?.username)
+                            startActivity(profileIntent)
+                            finish()
+                        }
+                        .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
+                }
             }).setNegativeButton("No", null).show()
         return
     }
 
     private fun handleSubmitButtonClick() {
+        Log.i(TAG, "submit button clicked")
+
         // Data validation
         if (etEmoji.text.isBlank()) {
             Toast.makeText(this, "Emoji cannot be empty", Toast.LENGTH_SHORT).show()
-            return
+            //return
         }
         if (rbDifficulty.rating < 1) {
             Toast.makeText(this, "Difficulty must be selected", Toast.LENGTH_SHORT).show()
-            return
+            //return
         }
         if (etAnswer.text.isBlank()) {
             Toast.makeText(this, "Answer cannot be empty", Toast.LENGTH_SHORT).show()
-            return
+            //return
         }
         if (signedInUser == null) {
             Toast.makeText(this, "User is not signed in, please wait", Toast.LENGTH_SHORT).show()
-            return
+            //return
         }
 
         btnSubmit.isEnabled = false
@@ -152,11 +168,13 @@ class CreateActivity : AppCompatActivity() {
             answers,
             signedInUser!!.username
         )
-
         val extras = intent.extras
-        if (extras!!.containsKey(EXTRA_TRIVIA)) { // If trivia is being updated
+        if (extras != null && extras.containsKey(EXTRA_TRIVIA)) { // If trivia is being updated
+            Log.i(TAG, " attempting to update trivia")
+
             val movie = intent.getParcelableExtra<Movie>(EXTRA_TRIVIA)!!
             Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show()
+
             firestoreDb.collection("movies").document(movie.documentId)
                 .set(newTrivia, SetOptions.merge())
                 .addOnSuccessListener { val profileIntent = Intent(
@@ -168,17 +186,28 @@ class CreateActivity : AppCompatActivity() {
                     finish()
                 }
                 .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+
+
         } else { // add the newTrivia to Firebase
+            Log.i(TAG, "adding new trivia")
+
             firestoreDb.collection("movies")
                 .add(newTrivia)
                 .addOnSuccessListener {
                     // navigate back to profile screen
+                    Log.i(TAG, " trivia added")
+
+
                     val profileIntent = Intent(this, ProfileActivity::class.java)
                     profileIntent.putExtra(EXTRA_USERNAME, signedInUser?.username)
                     startActivity(profileIntent)
                     finish()
+
+
                 }
                 .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+
+
         }
 
     }
