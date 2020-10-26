@@ -1,13 +1,14 @@
 package au.edu.swin.sdmd.emojinary
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.renderscript.ScriptGroup
 import android.text.InputFilter
 import android.text.Spanned
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import au.edu.swin.sdmd.emojinary.models.Movie
 import au.edu.swin.sdmd.emojinary.models.User
@@ -15,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_create.*
+
 
 private var signedInUser: User? = null
 private const val TAG = "CreateActivity"
@@ -74,18 +76,33 @@ class CreateActivity : AppCompatActivity() {
 
 
     inner class EmojiFilter : InputFilter {
-        override fun filter(source: CharSequence?, start: Int, end: Int, dest: Spanned?, dstart: Int, dend: Int): CharSequence {
+        override fun filter(
+            source: CharSequence?,
+            start: Int,
+            end: Int,
+            dest: Spanned?,
+            dstart: Int,
+            dend: Int
+        ): CharSequence {
             if (source == null || source.isBlank()) {
                 return ""
             }
             Log.i(TAG, "Text added $source, it has a length of ${source.length} characters")
-            val validCharTypes = listOf(Character.SURROGATE, Character.NON_SPACING_MARK, Character.OTHER_SYMBOL).map { it.toInt() }
+            val validCharTypes = listOf(
+                Character.SURROGATE,
+                Character.NON_SPACING_MARK,
+                Character.OTHER_SYMBOL
+            ).map { it.toInt() }
             // check that every character input matches the valid char types
             for (inputChar in source) {
                 val type = Character.getType(inputChar)
                 Log.i(TAG, "Character type $type")
                 if (!VALID_CHAR_TYPES.contains(type)) {
-                    Toast.makeText(this@CreateActivity, "Only emojis are allowed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@CreateActivity,
+                        "Only emojis are allowed",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return ""
                 }
             }
@@ -95,7 +112,12 @@ class CreateActivity : AppCompatActivity() {
     }
 
     private fun handleDeleteButtonClick() {
-        Toast.makeText(this, "Delete  selected", Toast.LENGTH_SHORT).show()
+        AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert)
+            .setTitle("Delete Trivia").setMessage("Are you sure you want to delete this trivia?")
+            .setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
+                finish()
+                Toast.makeText(this, "Activity closed", Toast.LENGTH_SHORT).show()
+            }).setNegativeButton("No", null).show()
         return
     }
 
@@ -137,7 +159,10 @@ class CreateActivity : AppCompatActivity() {
             Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show()
             firestoreDb.collection("movies").document(movie.documentId)
                 .set(newTrivia, SetOptions.merge())
-                .addOnSuccessListener { val profileIntent = Intent(this, ProfileActivity::class.java)
+                .addOnSuccessListener { val profileIntent = Intent(
+                    this,
+                    ProfileActivity::class.java
+                )
                     profileIntent.putExtra(EXTRA_USERNAME, signedInUser?.username)
                     startActivity(profileIntent)
                     finish()
