@@ -124,9 +124,7 @@ class CreateActivity : AppCompatActivity() {
                     firestoreDb.collection("movies").document(movie.documentId)
                         .delete()
                         .addOnSuccessListener {
-                            val profileIntent = Intent(this, ProfileActivity::class.java)
-                            profileIntent.putExtra(EXTRA_USERNAME, signedInUser?.username)
-                            startActivity(profileIntent)
+
                             finish()
                         }
                         .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
@@ -196,18 +194,9 @@ class CreateActivity : AppCompatActivity() {
                 .addOnSuccessListener {
                     // navigate back to profile screen
                     Log.i(TAG, " trivia added")
-
-
-                    val profileIntent = Intent(this, ProfileActivity::class.java)
-                    profileIntent.putExtra(EXTRA_USERNAME, signedInUser?.username)
-                    startActivity(profileIntent)
                     finish()
-
-
                 }
                 .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
-
-
         }
 
     }
