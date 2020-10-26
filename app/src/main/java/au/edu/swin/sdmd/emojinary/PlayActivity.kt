@@ -8,18 +8,21 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import au.edu.swin.sdmd.emojinary.models.Movie
 import au.edu.swin.sdmd.emojinary.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_play.*
-import kotlinx.android.synthetic.main.item_trivia.*
+import kotlinx.android.synthetic.main.activity_play.drawer_layout
+import kotlinx.android.synthetic.main.activity_play.navView
 import kotlinx.android.synthetic.main.item_trivia.tvEmoji
 
 private const val TAG = "PlayActivity"
 const val EXTRA_USERNAME = "EXTRA_USERNAME"
 class PlayActivity : AppCompatActivity() {
 
+    lateinit var toggle: ActionBarDrawerToggle
     // get currently signed in user from Firebase
     private var signedInUser: User? = null
     // this is a lateinit var because it is initalised in onCreate,
@@ -36,6 +39,27 @@ class PlayActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play)
+
+        // navigation drawer handling
+        toggle = ActionBarDrawerToggle(this, drawer_layout, R.string.open, R.string.close)
+        drawer_layout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        navView.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.navPlay -> {
+                    drawer_layout.closeDrawers()
+                }
+                R.id.navProfile -> {
+                    val intent = Intent(this, ProfileActivity::class.java)
+                    intent.putExtra(EXTRA_USERNAME, signedInUser?.username)
+                    startActivity(intent)
+                    drawer_layout.closeDrawers()
+                }
+            }
+            true
+        }
 
         tvScore.text = "Score: ${score.toString()}"
 
@@ -154,6 +178,12 @@ class PlayActivity : AppCompatActivity() {
             intent.putExtra(EXTRA_USERNAME, signedInUser?.username)
             startActivity(intent)
         }
+
+        // if the user opens the menu bar
+        if (toggle.onOptionsItemSelected(item)) {
+            return true
+        }
+
         return super.onOptionsItemSelected(item)
     }
 }
